@@ -356,7 +356,7 @@ if page == "Questionnaire":
         if reasons:
             st.info("Reasoning: " + "; ".join(reasons))
         # navigate to recommendation
-        st.experimental_rerun()
+        st.rerun()
 
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -401,7 +401,7 @@ elif page == "Recommendation":
                     "notifications": notifications_preview
                 })
                 st.success("✅ Settings applied to your profile (simulated). Go to 'Applied Settings' to review.")
-                st.experimental_rerun()
+                st.rerun()
         with c2:
             if st.button("✏️ Edit settings before apply", key="edit_reco"):
                 st.info("You can edit the toggles above to tweak recommendations, then press Apply.")
@@ -420,7 +420,7 @@ elif page == "Apply":
             reco = st.session_state.last_reco or get_recommendations_for_class(st.session_state.last_class)
             st.session_state.applied_settings.update(reco)
             st.success("Applied recommended settings (simulated).")
-            st.experimental_rerun()
+            st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------------- Page: Applied Settings ----------------
