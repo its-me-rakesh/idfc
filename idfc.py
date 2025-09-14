@@ -1,44 +1,73 @@
 import streamlit as st
 from datetime import datetime
 
-st.set_page_config(page_title="IDFC Credit Card Prototype", layout="centered")
+st.set_page_config(page_title="IDFC Credit Card App", layout="centered")
 
-# ---------------- Brand Styling ----------------
+# ---------------- Brand CSS ----------------
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
-    * {
-        font-family: 'Inter', sans-serif !important;
-    }
+    * { font-family: 'Inter', sans-serif !important; }
 
-    .app-container {
-        width: 380px;
+    .phone-frame {
+        width: 390px;
         margin: auto;
         border: 2px solid #ddd;
         border-radius: 30px;
         box-shadow: 0px 6px 18px rgba(0,0,0,0.2);
         background: #FFFFFF;
-        padding: 15px;
+        overflow: hidden;
     }
 
     .header {
-        background-color: #AD0020;
+        background: linear-gradient(135deg, #AD0020, #820018);
         color: white;
-        padding: 15px;
-        border-radius: 20px;
+        padding: 20px;
         text-align: center;
         font-weight: 600;
         font-size: 20px;
     }
 
-    .decline-card {
-        border-radius: 15px;
+    .credit-card {
+        background: #AD0020;
+        color: white;
+        border-radius: 16px;
+        padding: 20px;
+        margin: 15px;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .credit-card h3 {
+        margin: 0;
+        font-size: 18px;
+    }
+
+    .metric-box {
+        border-radius: 12px;
+        background: #FFCC00;
         padding: 15px;
-        margin-bottom: 15px;
-        box-shadow: 0px 3px 8px rgba(0,0,0,0.1);
+        margin: 10px;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .decline-bubble {
+        border-radius: 12px;
+        padding: 12px;
+        margin: 8px;
+        max-width: 80%;
+        box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .decline-red {
+        background: #ffe5e8;
         border-left: 6px solid #AD0020;
-        background: #fff8f8;
+    }
+
+    .decline-yellow {
+        background: #fff7cc;
+        border-left: 6px solid #FFCC00;
     }
 
     .stButton>button {
@@ -48,6 +77,7 @@ st.markdown("""
         padding: 8px 16px;
         font-weight: 600;
         border: none;
+        margin-top: 6px;
     }
 
     .stButton>button:hover {
@@ -55,35 +85,36 @@ st.markdown("""
         color: #FFFFFF;
     }
 
-    .metric-box {
-        border-radius: 12px;
-        background: #FFCC00;
-        padding: 12px;
-        text-align: center;
-        font-weight: 600;
-    }
-
     .nav-bar {
         display: flex;
         justify-content: space-around;
         background: #f7f7f7;
-        padding: 10px;
-        border-top: 2px solid #AD0020;
-        border-radius: 0 0 20px 20px;
+        padding: 12px;
+        border-top: 2px solid #ddd;
+    }
+
+    .nav-item {
+        text-align: center;
+        font-size: 14px;
+    }
+
+    .active {
+        color: #AD0020;
+        font-weight: 600;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # ---------------- App Wrapper ----------------
-st.markdown("<div class='app-container'>", unsafe_allow_html=True)
+st.markdown("<div class='phone-frame'>", unsafe_allow_html=True)
 
 # ---------------- Header ----------------
-st.markdown("<div class='header'>💳 IDFC FIRST Credit Card</div>", unsafe_allow_html=True)
+st.markdown("<div class='header'>IDFC FIRST Credit Card</div>", unsafe_allow_html=True)
 
-# ---------------- Navigation ----------------
+# ---------------- Bottom Navigation ----------------
 menu = st.radio(
     "Navigation",
-    ["🏠 Home", "⚠️ Declines", "💳 Card Controls", "📊 EMI Options", "👤 Profile"],
+    ["🏠 Home", "⚠️ Declines", "💳 Controls", "📊 EMI", "👤 Profile"],
     horizontal=True,
     label_visibility="collapsed"
 )
@@ -93,54 +124,56 @@ declines = [
     {"merchant": "Swiggy", "amount": 2450, "reason": "Insufficient Balance", "code": "INSUFFICIENT_LIMIT"},
     {"merchant": "Amazon", "amount": 1299, "reason": "Online usage disabled", "code": "CARD_CONTROL"},
     {"merchant": "Zomato", "amount": 560, "reason": "Incorrect PIN entered", "code": "PIN_ERROR"},
-    {"merchant": "Netflix", "amount": 499, "reason": "Invalid CVV", "code": "INVALID_CREDENTIALS"}
 ]
 
 # ---------------- Home ----------------
 if menu == "🏠 Home":
-    st.markdown("### Dashboard")
-    st.markdown("<div class='metric-box'>Available Limit: ₹75,500</div>", unsafe_allow_html=True)
-    st.markdown("<div class='metric-box'>Current Due: ₹24,500 (Due in 12 days)</div>", unsafe_allow_html=True)
-    st.progress(0.65)
+    st.markdown("""
+        <div class='credit-card'>
+            <h3>Rahul Sharma</h3>
+            <p>**** **** **** 2345</p>
+            <h3>Available Limit: ₹75,500</h3>
+            <p>Due: ₹24,500 (12 days left)</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<div class='metric-box'>⭐ Rewards: 12,540 Points</div>", unsafe_allow_html=True)
     st.info("💡 Pay ₹10,000 today to increase your available limit instantly.")
 
 # ---------------- Declines ----------------
 elif menu == "⚠️ Declines":
     st.markdown("### Recent Declines")
     for d in declines:
+        bubble_class = "decline-red" if d["code"] != "CARD_CONTROL" else "decline-yellow"
         st.markdown(
             f"""
-            <div class="decline-card">
-                <h4>{d['merchant']} – ₹{d['amount']}</h4>
-                <p><b>Reason:</b> {d['reason']}</p>
-                <p><b>Time:</b> {datetime.now().strftime("%H:%M:%S")}</p>
+            <div class="decline-bubble {bubble_class}">
+                <b>{d['merchant']}</b> – ₹{d['amount']} <br>
+                <small>{d['reason']} | {datetime.now().strftime("%H:%M:%S")}</small>
             </div>
             """, unsafe_allow_html=True
         )
-
         if d["code"] == "INSUFFICIENT_LIMIT":
             st.button("💰 Pay Now", key=d['merchant']+"_pay")
         elif d["code"] == "CARD_CONTROL":
             st.button("⚙️ Update Card Settings", key=d['merchant']+"_settings")
         elif d["code"] == "PIN_ERROR":
             st.button("🔒 Reset PIN", key=d['merchant']+"_reset")
-        elif d["code"] == "INVALID_CREDENTIALS":
-            st.button("🆕 Generate Virtual Card", key=d['merchant']+"_virtual")
 
-# ---------------- Card Controls ----------------
-elif menu == "💳 Card Controls":
-    st.markdown("### Manage Your Card")
+# ---------------- Controls ----------------
+elif menu == "💳 Controls":
+    st.markdown("### Card Controls")
     st.toggle("Enable Online Transactions", value=True)
     st.toggle("Enable International Transactions", value=False)
     st.toggle("Enable Contactless Payments", value=True)
     st.toggle("Enable ATM Withdrawals", value=True)
-    st.success("✅ Preferences saved successfully.")
+    st.success("✅ Preferences saved")
 
-# ---------------- EMI Options ----------------
-elif menu == "📊 EMI Options":
-    st.markdown("### Convert Purchases to EMI")
-    purchase = st.selectbox("Select Transaction", ["Amazon – ₹12,000", "Flipkart – ₹18,500", "Myntra – ₹6,500"])
-    tenure = st.radio("Choose Tenure", ["3 months", "6 months", "12 months"], horizontal=True)
+# ---------------- EMI ----------------
+elif menu == "📊 EMI":
+    st.markdown("### Convert to EMI")
+    st.write("Amazon – ₹12,000")
+    st.radio("Select Tenure", ["3 months (₹4,200)", "6 months (₹2,150)", "12 months (₹1,100)"])
     st.button("📌 Convert to EMI")
 
 # ---------------- Profile ----------------
@@ -153,10 +186,11 @@ elif menu == "👤 Profile":
     st.button("🚪 Logout")
 
 # ---------------- Footer ----------------
-st.markdown("<div class='nav-bar'>🏠 | ⚠️ | 💳 | 📊 | 👤</div>", unsafe_allow_html=True)
+st.markdown("<div class='nav-bar'><div class='nav-item'>🏠</div><div class='nav-item'>⚠️</div><div class='nav-item'>💳</div><div class='nav-item'>📊</div><div class='nav-item'>👤</div></div>", unsafe_allow_html=True)
 
-# ---------------- Close App Wrapper ----------------
+# ---------------- Close Wrapper ----------------
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
