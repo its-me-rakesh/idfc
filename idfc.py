@@ -1,118 +1,154 @@
 import streamlit as st
 from datetime import datetime
 
-st.set_page_config(page_title="IDFC Credit Card - Decline Assist", layout="centered")
+st.set_page_config(page_title="IDFC Credit Card App Prototype", layout="centered")
 
-# ---- Mock Data ----
+# ---- Mock Decline Data ----
 declines = [
-    {
-        "merchant": "Swiggy",
-        "amount": 2450,
-        "reason": "Insufficient Balance",
-        "code": "INSUFFICIENT_LIMIT",
-        "time": datetime.now().strftime("%H:%M:%S")
-    },
-    {
-        "merchant": "Amazon",
-        "amount": 1299,
-        "reason": "Online usage disabled",
-        "code": "CARD_CONTROL",
-        "time": datetime.now().strftime("%H:%M:%S")
-    },
-    {
-        "merchant": "Zomato",
-        "amount": 560,
-        "reason": "Incorrect PIN entered",
-        "code": "PIN_ERROR",
-        "time": datetime.now().strftime("%H:%M:%S")
-    },
-    {
-        "merchant": "Netflix",
-        "amount": 499,
-        "reason": "Invalid CVV",
-        "code": "INVALID_CREDENTIALS",
-        "time": datetime.now().strftime("%H:%M:%S")
-    }
+    {"merchant": "Swiggy", "amount": 2450, "reason": "Insufficient Balance", "code": "INSUFFICIENT_LIMIT"},
+    {"merchant": "Amazon", "amount": 1299, "reason": "Online usage disabled", "code": "CARD_CONTROL"},
+    {"merchant": "Zomato", "amount": 560, "reason": "Incorrect PIN entered", "code": "PIN_ERROR"},
+    {"merchant": "Netflix", "amount": 499, "reason": "Invalid CVV", "code": "INVALID_CREDENTIALS"}
 ]
 
-# ---- Title ----
-st.markdown("<h2 style='text-align: center;'>💳 IDFC Credit Card – Decline Assist</h2>", unsafe_allow_html=True)
-st.write("Smart, real-time help for declined transactions.\n---")
+# ---- CSS Styling ----
+st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
-# ---- Tabs for Decline Categories ----
-tab1, tab2, tab3, tab4 = st.tabs(
-    ["⚠️ Insufficient Balance", "🔒 Card Controls", "🔑 PIN Issues", "🆘 Invalid Credentials"]
+    * {
+        font-family: 'Inter', sans-serif !important;
+        color: #000000;
+    }
+
+    .app-container {
+        width: 380px;
+        margin: auto;
+        border: 2px solid #ddd;
+        border-radius: 30px;
+        box-shadow: 0px 6px 18px rgba(0,0,0,0.2);
+        background: #FFFFFF;
+        padding: 15px;
+    }
+
+    .header {
+        background-color: #AD0020;
+        color: white;
+        padding: 15px;
+        border-radius: 20px;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .decline-card {
+        border-radius: 15px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0px 3px 8px rgba(0,0,0,0.1);
+        border-left: 6px solid #AD0020;
+        background: #fff8f8;
+    }
+
+    .stButton>button {
+        background-color: #AD0020;
+        color: #FFFFFF;
+        border-radius: 12px;
+        padding: 8px 16px;
+        font-weight: 600;
+        border: none;
+    }
+
+    .stButton>button:hover {
+        background-color: #820018;
+        color: #FFFFFF;
+    }
+
+    .metric-box {
+        border-radius: 12px;
+        background: #FFCC00;
+        padding: 12px;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .nav-bar {
+        display: flex;
+        justify-content: space-around;
+        background: #f7f7f7;
+        padding: 10px;
+        border-top: 2px solid #AD0020;
+        border-radius: 0 0 20px 20px;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# ---- App Wrapper ----
+st.markdown("<div class='app-container'>", unsafe_allow_html=True)
+
+# ---- Header ----
+st.markdown("<div class='header'>💳 IDFC FIRST Credit Card</div>", unsafe_allow_html=True)
+
+# ---- Navigation ----
+menu = st.radio(
+    "Navigation",
+    ["🏠 Home", "⚠️ Declines", "💳 Card Controls", "👤 Profile"],
+    horizontal=True,
+    label_visibility="collapsed"
 )
 
-# ---- Tab 1: Insufficient Balance ----
-with tab1:
-    for d in [x for x in declines if x["code"] == "INSUFFICIENT_LIMIT"]:
-        st.markdown(
-            f"""
-            <div style="border-radius:15px; padding:15px; background-color:#ffe8e8; margin-bottom:15px;">
-                <h4>❌ Payment Declined at {d['merchant']}</h4>
-                <p><b>Amount:</b> ₹{d['amount']} | <b>Time:</b> {d['time']}</p>
-                <p><b>Reason:</b> {d['reason']}</p>
-            </div>
-            """, unsafe_allow_html=True
-        )
-        col1, col2 = st.columns(2)
-        if col1.button(f"💰 Pay ₹{d['amount']} now", key=d['merchant']+"_pay"):
-            st.success("✅ Payment successful. Limit updated.")
-        if col2.button("🔄 Retry Transaction", key=d['merchant']+"_retry"):
-            st.info("🔁 Retrying transaction...")
+# ---- Home ----
+if menu == "🏠 Home":
+    st.markdown("### Dashboard")
+    st.markdown("<div class='metric-box'>Available Limit: ₹75,500</div>", unsafe_allow_html=True)
+    st.markdown("<div class='metric-box'>Current Due: ₹24,500 (Due in 12 days)</div>", unsafe_allow_html=True)
+    st.progress(0.65)
+    st.info("💡 Pay ₹10,000 today to increase your available limit instantly.")
 
-# ---- Tab 2: Card Controls ----
-with tab2:
-    for d in [x for x in declines if x["code"] == "CARD_CONTROL"]:
+# ---- Declines ----
+elif menu == "⚠️ Declines":
+    st.markdown("### Recent Declines")
+    for d in declines:
         st.markdown(
             f"""
-            <div style="border-radius:15px; padding:15px; background-color:#fff4e6; margin-bottom:15px;">
-                <h4>❌ Payment Declined at {d['merchant']}</h4>
-                <p><b>Amount:</b> ₹{d['amount']} | <b>Time:</b> {d['time']}</p>
+            <div class="decline-card">
+                <h4>{d['merchant']} – ₹{d['amount']}</h4>
                 <p><b>Reason:</b> {d['reason']}</p>
+                <p><b>Time:</b> {datetime.now().strftime("%H:%M:%S")}</p>
             </div>
             """, unsafe_allow_html=True
         )
-        col1, col2 = st.columns(2)
-        if col1.button("✅ Allow Once", key=d['merchant']+"_once"):
-            st.success("✔️ Online usage enabled for this transaction.")
-        if col2.button("⚙️ Update Settings", key=d['merchant']+"_settings"):
-            st.info("⚙️ Opening card control settings...")
 
-# ---- Tab 3: PIN Errors ----
-with tab3:
-    for d in [x for x in declines if x["code"] == "PIN_ERROR"]:
-        st.markdown(
-            f"""
-            <div style="border-radius:15px; padding:15px; background-color:#e6f3ff; margin-bottom:15px;">
-                <h4>❌ Payment Declined at {d['merchant']}</h4>
-                <p><b>Amount:</b> ₹{d['amount']} | <b>Time:</b> {d['time']}</p>
-                <p><b>Reason:</b> {d['reason']}</p>
-            </div>
-            """, unsafe_allow_html=True
-        )
-        col1, col2 = st.columns(2)
-        if col1.button("🔁 Retry PIN", key=d['merchant']+"_retry_pin"):
-            st.info("Please re-enter your PIN securely.")
-        if col2.button("🔒 Reset PIN", key=d['merchant']+"_reset_pin"):
-            st.success("🔑 PIN reset successfully!")
+        if d["code"] == "INSUFFICIENT_LIMIT":
+            st.button("💰 Pay Now", key=d['merchant']+"_pay")
+        elif d["code"] == "CARD_CONTROL":
+            st.button("⚙️ Update Card Settings", key=d['merchant']+"_settings")
+        elif d["code"] == "PIN_ERROR":
+            st.button("🔒 Reset PIN", key=d['merchant']+"_reset")
+        elif d["code"] == "INVALID_CREDENTIALS":
+            st.button("🆕 Generate Virtual Card", key=d['merchant']+"_virtual")
 
-# ---- Tab 4: Invalid Credentials ----
-with tab4:
-    for d in [x for x in declines if x["code"] == "INVALID_CREDENTIALS"]:
-        st.markdown(
-            f"""
-            <div style="border-radius:15px; padding:15px; background-color:#f3e6ff; margin-bottom:15px;">
-                <h4>❌ Payment Declined at {d['merchant']}</h4>
-                <p><b>Amount:</b> ₹{d['amount']} | <b>Time:</b> {d['time']}</p>
-                <p><b>Reason:</b> {d['reason']}</p>
-            </div>
-            """, unsafe_allow_html=True
-        )
-        col1, col2 = st.columns(2)
-        if col1.button("🔑 View Card Details", key=d['merchant']+"_view"):
-            st.info("🔍 Secure card details displayed.")
-        if col2.button("🆕 Generate Virtual Card", key=d['merchant']+"_virtual"):
-            st.success("💳 Virtual card created successfully.")
+# ---- Card Controls ----
+elif menu == "💳 Card Controls":
+    st.markdown("### Manage Your Card")
+    st.toggle("Enable Online Transactions", value=True)
+    st.toggle("Enable International Transactions", value=False)
+    st.toggle("Enable Contactless Payments", value=True)
+    st.toggle("Enable ATM Withdrawals", value=True)
+    st.success("✅ Preferences saved successfully.")
+
+# ---- Profile ----
+elif menu == "👤 Profile":
+    st.markdown("### My Profile")
+    st.write("**Name:** Rahul Sharma")
+    st.write("**Card:** IDFC FIRST Classic Credit Card")
+    st.write("**Member Since:** 2022")
+    st.write("**Rewards Points:** 12,540")
+    st.button("🚪 Logout")
+
+# ---- Footer ----
+st.markdown("<div class='nav-bar'>🏠 | ⚠️ | 💳 | 👤</div>", unsafe_allow_html=True)
+
+# ---- Close App Wrapper ----
+st.markdown("</div>", unsafe_allow_html=True)
+
 
