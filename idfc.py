@@ -347,13 +347,13 @@ if page == "Questionnaire":
     # Quick summary & action
     st.markdown("<hr/>", unsafe_allow_html=True)
     st.markdown(f"**Summary so far:** {st.session_state.answers.get('name','(no name)')} — monthly ₹{st.session_state.answers.get('monthly_spend',0)}")
-        if st.button("➡️ Get recommendation"):
-            cls, reasons = classify_user(st.session_state.answers)
-            st.session_state.last_class = cls
-            st.session_state.last_reco = get_recommendations_for_class(cls)
-            st.session_state.reasons = reasons
-            st.session_state.current_page = "Recommendation"
-            st.rerun()
+    if st.button("➡️ Get recommendation"):
+        cls, reasons = classify_user(st.session_state.answers)
+        st.session_state.last_class = cls
+        st.session_state.last_reco = get_recommendations_for_class(cls)
+        st.session_state.reasons = reasons
+        st.session_state.current_page = "Recommendation"
+        st.rerun()
 
 
     st.markdown("</div>", unsafe_allow_html=True)
