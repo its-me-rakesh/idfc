@@ -1,24 +1,15 @@
 import streamlit as st
 from datetime import datetime
 
-st.set_page_config(page_title="IDFC Credit Card App Prototype", layout="centered")
+st.set_page_config(page_title="IDFC Credit Card Prototype", layout="centered")
 
-# ---- Mock Decline Data ----
-declines = [
-    {"merchant": "Swiggy", "amount": 2450, "reason": "Insufficient Balance", "code": "INSUFFICIENT_LIMIT"},
-    {"merchant": "Amazon", "amount": 1299, "reason": "Online usage disabled", "code": "CARD_CONTROL"},
-    {"merchant": "Zomato", "amount": 560, "reason": "Incorrect PIN entered", "code": "PIN_ERROR"},
-    {"merchant": "Netflix", "amount": 499, "reason": "Invalid CVV", "code": "INVALID_CREDENTIALS"}
-]
-
-# ---- CSS Styling ----
+# ---------------- Brand Styling ----------------
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
     * {
         font-family: 'Inter', sans-serif !important;
-        color: #000000;
     }
 
     .app-container {
@@ -38,6 +29,7 @@ st.markdown("""
         border-radius: 20px;
         text-align: center;
         font-weight: 600;
+        font-size: 20px;
     }
 
     .decline-card {
@@ -82,21 +74,29 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ---- App Wrapper ----
+# ---------------- App Wrapper ----------------
 st.markdown("<div class='app-container'>", unsafe_allow_html=True)
 
-# ---- Header ----
+# ---------------- Header ----------------
 st.markdown("<div class='header'>💳 IDFC FIRST Credit Card</div>", unsafe_allow_html=True)
 
-# ---- Navigation ----
+# ---------------- Navigation ----------------
 menu = st.radio(
     "Navigation",
-    ["🏠 Home", "⚠️ Declines", "💳 Card Controls", "👤 Profile"],
+    ["🏠 Home", "⚠️ Declines", "💳 Card Controls", "📊 EMI Options", "👤 Profile"],
     horizontal=True,
     label_visibility="collapsed"
 )
 
-# ---- Home ----
+# ---------------- Mock Data ----------------
+declines = [
+    {"merchant": "Swiggy", "amount": 2450, "reason": "Insufficient Balance", "code": "INSUFFICIENT_LIMIT"},
+    {"merchant": "Amazon", "amount": 1299, "reason": "Online usage disabled", "code": "CARD_CONTROL"},
+    {"merchant": "Zomato", "amount": 560, "reason": "Incorrect PIN entered", "code": "PIN_ERROR"},
+    {"merchant": "Netflix", "amount": 499, "reason": "Invalid CVV", "code": "INVALID_CREDENTIALS"}
+]
+
+# ---------------- Home ----------------
 if menu == "🏠 Home":
     st.markdown("### Dashboard")
     st.markdown("<div class='metric-box'>Available Limit: ₹75,500</div>", unsafe_allow_html=True)
@@ -104,7 +104,7 @@ if menu == "🏠 Home":
     st.progress(0.65)
     st.info("💡 Pay ₹10,000 today to increase your available limit instantly.")
 
-# ---- Declines ----
+# ---------------- Declines ----------------
 elif menu == "⚠️ Declines":
     st.markdown("### Recent Declines")
     for d in declines:
@@ -127,7 +127,7 @@ elif menu == "⚠️ Declines":
         elif d["code"] == "INVALID_CREDENTIALS":
             st.button("🆕 Generate Virtual Card", key=d['merchant']+"_virtual")
 
-# ---- Card Controls ----
+# ---------------- Card Controls ----------------
 elif menu == "💳 Card Controls":
     st.markdown("### Manage Your Card")
     st.toggle("Enable Online Transactions", value=True)
@@ -136,7 +136,14 @@ elif menu == "💳 Card Controls":
     st.toggle("Enable ATM Withdrawals", value=True)
     st.success("✅ Preferences saved successfully.")
 
-# ---- Profile ----
+# ---------------- EMI Options ----------------
+elif menu == "📊 EMI Options":
+    st.markdown("### Convert Purchases to EMI")
+    purchase = st.selectbox("Select Transaction", ["Amazon – ₹12,000", "Flipkart – ₹18,500", "Myntra – ₹6,500"])
+    tenure = st.radio("Choose Tenure", ["3 months", "6 months", "12 months"], horizontal=True)
+    st.button("📌 Convert to EMI")
+
+# ---------------- Profile ----------------
 elif menu == "👤 Profile":
     st.markdown("### My Profile")
     st.write("**Name:** Rahul Sharma")
@@ -145,10 +152,11 @@ elif menu == "👤 Profile":
     st.write("**Rewards Points:** 12,540")
     st.button("🚪 Logout")
 
-# ---- Footer ----
-st.markdown("<div class='nav-bar'>🏠 | ⚠️ | 💳 | 👤</div>", unsafe_allow_html=True)
+# ---------------- Footer ----------------
+st.markdown("<div class='nav-bar'>🏠 | ⚠️ | 💳 | 📊 | 👤</div>", unsafe_allow_html=True)
 
-# ---- Close App Wrapper ----
+# ---------------- Close App Wrapper ----------------
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
